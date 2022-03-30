@@ -26,9 +26,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    private final CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
     @Autowired
-    private final JWTAuthenticationEntryPoint unauthorizedHandler;
+    private JWTAuthenticationEntryPoint unauthorizedHandler;
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
@@ -57,7 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().antMatchers(HttpMethod.POST,"/api/v1/users/login").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilter(jwtAuthenticationFilter());
+//        http.addFilter(jwtAuthenticationFilter());
     }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)

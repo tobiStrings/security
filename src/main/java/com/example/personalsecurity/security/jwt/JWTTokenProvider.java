@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Slf4j
-@Component
+//@Component
 public class JWTTokenProvider {
     @Value("${jwt.secret}")
     private String jwtSecret;

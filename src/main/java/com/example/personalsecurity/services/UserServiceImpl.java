@@ -7,7 +7,9 @@ import com.example.personalsecurity.data.models.Role;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.data.repository.UserRepository;
 import com.example.personalsecurity.exceptions.SecException;
+import com.example.personalsecurity.mail.MailGun;
 import com.example.personalsecurity.security.jwt.JWTTokenProvider;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String register(RegisterRequest request) throws SecException {
+    public String register(RegisterRequest request) throws SecException, UnirestException {
         validateRegisterRequest(request);
         User newUser = new User();
         newUser.setFirstName(request.getFirstName());
@@ -40,23 +42,35 @@ public class UserServiceImpl implements UserService{
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setEmail(request.getEmail());
         newUser.getRoles().add(Role.INDIVIDUAL);
+        final String API_KEY = "8b57e315c78871227477cb158795eb14-62916a6c-73cd52da";
+        MailGun.sendMail(API_KEY,"",newUser.getEmail());
         saveUser(newUser);
         return "Registration Successful";
     }
 
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        log.info("Before Authentication");
+        try {
 
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+
+        log.info("Passed the authentication");
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenProvider.generateToken(authentication);
         log.info("JWT {}",jwt);
         return new JwtAuthenticationResponse(jwt,"Bearer");
+        }catch (Exception e){
+            log.error("Error happened");
+            log.error("{}", e.getMessage());
+            return  null;
+        }
     }
 
     private void validateRegisterRequest(RegisterRequest request) throws SecException {

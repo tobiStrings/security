@@ -4,6 +4,7 @@ import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
 import com.example.personalsecurity.exceptions.SecException;
 import com.example.personalsecurity.services.UserService;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,10 @@ public class UserController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request){
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(request));
-        } catch (SecException e){
+        } catch (SecException | UnirestException e){
             return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
+
     }
 
     @PostMapping("login")

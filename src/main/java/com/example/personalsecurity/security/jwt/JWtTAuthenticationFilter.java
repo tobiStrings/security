@@ -1,5 +1,6 @@
 package com.example.personalsecurity.security.jwt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+@Slf4j
 public class JWtTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JWTTokenProvider jwtTokenProvider;
@@ -21,7 +22,8 @@ public class JWtTAuthenticationFilter extends OncePerRequestFilter {
     private CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         try{
             String jwt = getJwtFromRequest(request);
 
@@ -42,6 +44,7 @@ public class JWtTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest httpServletRequest){
+        log.info("Inside the form request");
         String bearerToken = httpServletRequest.getHeader("Authorization");
         String tokenPrefix = "Bearer ";
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(tokenPrefix)){

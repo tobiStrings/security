@@ -6,6 +6,7 @@ import com.example.personalsecurity.data.dtos.request.RegisterRequest;
 import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.exceptions.SecException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Component
 public interface UserService {
     User saveUser(User newUser);
-    String register(RegisterRequest request) throws SecException;
+    String register(RegisterRequest request) throws SecException, UnirestException;
     JwtAuthenticationResponse login(LoginRequest request);
 
 }
