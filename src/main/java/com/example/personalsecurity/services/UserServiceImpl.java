@@ -2,7 +2,9 @@ package com.example.personalsecurity.services;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
+import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
+import com.example.personalsecurity.data.dtos.response.SetPasswordResponse;
 import com.example.personalsecurity.data.models.Role;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.data.repository.UserRepository;
@@ -18,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -39,15 +44,21 @@ public class UserServiceImpl implements UserService{
         User newUser = new User();
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setEmail(request.getEmail());
+        newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.getRoles().add(Role.INDIVIDUAL);
         final String API_KEY = "8b57e315c78871227477cb158795eb14-62916a6c-73cd52da";
-        MailGun.sendMail(API_KEY,"",newUser.getEmail());
+        final String DoMAIN_NAME ="sandbox144583205df248d490f9255207d5ea30.mailgun.org";
+        String text = "Hi "+request.getFirstName()+"\nYour verification number is "+generateVerificationNumber();
+        MailGun.sendMail(API_KEY,DoMAIN_NAME,newUser.getEmail(),text);
         saveUser(newUser);
         return "Registration Successful";
     }
-
+    private String generateVerificationNumber(){
+        Random rnd = new Random();
+        int number = rnd.nextInt(999999);
+        return String.format("%04d", number);
+    }
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) {
         log.info("Before Authentication");
@@ -72,6 +83,36 @@ public class UserServiceImpl implements UserService{
             return  null;
         }
     }
+    @Override
+    public SetPasswordResponse setUserPassword(SetPasswordRequest request) throws SecException {
+        validateSetPasswordRequest(request);
+
+        if (!request.getPassword().equals(request.getConfirmPassword())){
+            throw new SecException("Passwords does not match");
+        }
+
+        Optional<User> user = userRepository.findByEmail(request.getUserEmail());
+        if (user.isPresent()) {
+            user.get().setPassword(passwordEncoder.encode(request.getPassword()));
+            user.get().setIsEnabled(true);
+            userRepository.save(user.get());
+            return new SetPasswordResponse(user.get(),"User succesfully registered");
+        }
+        throw new SecException("User not found");
+
+    }
+
+    private void validateSetPasswordRequest(SetPasswordRequest request) throws SecException {
+        if (request.getPassword().isBlank() || request.getPassword().isEmpty()){
+            throw new SecException("Password Cannot be null");
+        }
+        if (request.getConfirmPassword().isBlank() || request.getConfirmPassword().isEmpty()){
+            throw new SecException("Confirm password cannot be null");
+        }
+        if (request.getUserEmail().isBlank() || request.getUserEmail().isEmpty()){
+            throw new SecException("User's email cannot be null");
+        }
+    }
 
     private void validateRegisterRequest(RegisterRequest request) throws SecException {
         if (request.getFirstName().isBlank() || request.getFirstName().isEmpty()){
@@ -86,9 +127,9 @@ public class UserServiceImpl implements UserService{
             throw new SecException("Please enter phone number");
         }
 
-        if (request.getPassword().isBlank() || request.getPassword().isEmpty()){
-            throw new SecException("Please enter password");
-        }
+//        if (request.getPassword().isBlank() || request.getPassword().isEmpty()){
+//            throw new SecException("Please enter password");
+//        }
 
     }
 }

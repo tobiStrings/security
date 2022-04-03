@@ -24,4 +24,8 @@ public class User {
     private String email;
     private List<Role> roles = new ArrayList<>();
     private boolean isEnabled;
+
+    public void setIsEnabled(boolean v){
+        isEnabled = v;
+    }
 }

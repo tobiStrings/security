@@ -2,6 +2,7 @@ package com.example.personalsecurity.controller;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
+import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.exceptions.SecException;
 import com.example.personalsecurity.services.UserService;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -32,5 +33,14 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         log.info("loginRequest {}",loginRequest);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.login(loginRequest));
+    }
+
+    @PostMapping("createPassword")
+    public ResponseEntity<?>setPassword(@RequestBody SetPasswordRequest request){
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(userService.setUserPassword(request));
+        } catch (SecException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
     }
 }
