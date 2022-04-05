@@ -44,10 +44,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
         }
     }
-    @PatchMapping("resetPassword")
+    @PatchMapping("changePassword")
     public ResponseEntity<?>resetPassword(@RequestBody ChangePasswordRequest request){
         try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.resetPassword(request));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.changePassword(request));
         } catch (SecException e) {
             log.info(e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
