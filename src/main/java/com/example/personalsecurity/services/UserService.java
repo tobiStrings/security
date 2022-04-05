@@ -3,10 +3,10 @@ package com.example.personalsecurity.services;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
-import com.example.personalsecurity.data.dtos.request.ResetPasswordRequest;
+import com.example.personalsecurity.data.dtos.request.ChangePasswordRequest;
 import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
-import com.example.personalsecurity.data.dtos.response.ResetPasswordResponse;
+import com.example.personalsecurity.data.dtos.response.ChangePasswordResponse;
 import com.example.personalsecurity.data.dtos.response.SetPasswordResponse;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.exceptions.SecException;
@@ -21,5 +21,5 @@ public interface UserService {
     String register(RegisterRequest request) throws SecException, UnirestException;
     JwtAuthenticationResponse login(LoginRequest request);
     SetPasswordResponse setUserPassword(SetPasswordRequest request) throws SecException;
-    ResetPasswordResponse resetPassword(ResetPasswordRequest request) throws SecException;
+    ChangePasswordResponse changePassword(ChangePasswordRequest request) throws SecException;
 }

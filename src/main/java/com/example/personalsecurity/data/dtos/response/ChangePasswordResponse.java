@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 @AllArgsConstructor
 @Data
-public class ResetPasswordResponse{
+public class ChangePasswordResponse {
     private User user;
     private String message;
 }

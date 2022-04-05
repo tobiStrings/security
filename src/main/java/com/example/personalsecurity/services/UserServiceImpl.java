@@ -2,10 +2,10 @@ package com.example.personalsecurity.services;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
-import com.example.personalsecurity.data.dtos.request.ResetPasswordRequest;
+import com.example.personalsecurity.data.dtos.request.ChangePasswordRequest;
 import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
-import com.example.personalsecurity.data.dtos.response.ResetPasswordResponse;
+import com.example.personalsecurity.data.dtos.response.ChangePasswordResponse;
 import com.example.personalsecurity.data.dtos.response.SetPasswordResponse;
 import com.example.personalsecurity.data.models.Role;
 import com.example.personalsecurity.data.models.User;
@@ -103,9 +103,8 @@ public class UserServiceImpl implements UserService{
         throw new SecException("User not found");
 
     }
-
     @Override
-    public ResetPasswordResponse resetPassword(ResetPasswordRequest request) throws SecException {
+    public ChangePasswordResponse changePassword(ChangePasswordRequest request) throws SecException {
         validateResetPasswordRequest(request);
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user.isEmpty()){
@@ -125,10 +124,10 @@ public class UserServiceImpl implements UserService{
         log.info("Test passed again ");
         user.get().setPassword(passwordEncoder.encode(request.getNewPassword()));
         User updatedUSer = userRepository.save(user.get());
-        return new ResetPasswordResponse(updatedUSer,"Password changed successfully");
+        return new ChangePasswordResponse(updatedUSer,"Password changed successfully");
     }
 
-    private void validateResetPasswordRequest(ResetPasswordRequest request) throws SecException {
+    private void validateResetPasswordRequest(ChangePasswordRequest request) throws SecException {
         if (request.getEmail().isEmpty() || request.getEmail().isBlank()){
             throw new SecException("Email cannot be empty");
         }

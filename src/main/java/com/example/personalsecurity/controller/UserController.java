@@ -2,7 +2,7 @@ package com.example.personalsecurity.controller;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
-import com.example.personalsecurity.data.dtos.request.ResetPasswordRequest;
+import com.example.personalsecurity.data.dtos.request.ChangePasswordRequest;
 import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.exceptions.SecException;
 import com.example.personalsecurity.services.UserService;
@@ -45,7 +45,7 @@ public class UserController {
         }
     }
     @PatchMapping("resetPassword")
-    public ResponseEntity<?>resetPassword(@RequestBody ResetPasswordRequest request){
+    public ResponseEntity<?>resetPassword(@RequestBody ChangePasswordRequest request){
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.resetPassword(request));
         } catch (SecException e) {
