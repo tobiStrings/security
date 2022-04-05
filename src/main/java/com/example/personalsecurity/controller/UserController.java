@@ -2,6 +2,7 @@ package com.example.personalsecurity.controller;
 
 import com.example.personalsecurity.data.dtos.request.LoginRequest;
 import com.example.personalsecurity.data.dtos.request.RegisterRequest;
+import com.example.personalsecurity.data.dtos.request.ResetPasswordRequest;
 import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
 import com.example.personalsecurity.exceptions.SecException;
 import com.example.personalsecurity.services.UserService;
@@ -35,11 +36,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.login(loginRequest));
     }
 
-    @PostMapping("createPassword")
+    @PatchMapping("createPassword")
     public ResponseEntity<?>setPassword(@RequestBody SetPasswordRequest request){
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.setUserPassword(request));
         } catch (SecException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
+        }
+    }
+    @PatchMapping("resetPassword")
+    public ResponseEntity<?>resetPassword(@RequestBody ResetPasswordRequest request){
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.resetPassword(request));
+        } catch (SecException e) {
+            log.info(e.getLocalizedMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getLocalizedMessage());
         }
     }
