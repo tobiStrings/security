@@ -1,13 +1,8 @@
 package com.example.personalsecurity.services;
 
 
-import com.example.personalsecurity.data.dtos.request.LoginRequest;
-import com.example.personalsecurity.data.dtos.request.RegisterRequest;
-import com.example.personalsecurity.data.dtos.request.ChangePasswordRequest;
-import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
-import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
-import com.example.personalsecurity.data.dtos.response.ChangePasswordResponse;
-import com.example.personalsecurity.data.dtos.response.SetPasswordResponse;
+import com.example.personalsecurity.data.dtos.request.*;
+import com.example.personalsecurity.data.dtos.response.*;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.exceptions.SecException;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -22,4 +17,6 @@ public interface UserService {
     JwtAuthenticationResponse login(LoginRequest request);
     SetPasswordResponse setUserPassword(SetPasswordRequest request) throws SecException;
     ChangePasswordResponse changePassword(ChangePasswordRequest request) throws SecException;
+    ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) throws SecException, UnirestException;
+    ResetPasswordResponse resetPassword(String email,ResetPasswordRequest request) throws SecException;
 }

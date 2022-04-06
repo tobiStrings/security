@@ -1,12 +1,7 @@
 package com.example.personalsecurity.services;
 
-import com.example.personalsecurity.data.dtos.request.LoginRequest;
-import com.example.personalsecurity.data.dtos.request.RegisterRequest;
-import com.example.personalsecurity.data.dtos.request.ChangePasswordRequest;
-import com.example.personalsecurity.data.dtos.request.SetPasswordRequest;
-import com.example.personalsecurity.data.dtos.response.JwtAuthenticationResponse;
-import com.example.personalsecurity.data.dtos.response.ChangePasswordResponse;
-import com.example.personalsecurity.data.dtos.response.SetPasswordResponse;
+import com.example.personalsecurity.data.dtos.request.*;
+import com.example.personalsecurity.data.dtos.response.*;
 import com.example.personalsecurity.data.models.Role;
 import com.example.personalsecurity.data.models.User;
 import com.example.personalsecurity.data.repository.UserRepository;
@@ -127,6 +122,40 @@ public class UserServiceImpl implements UserService{
         return new ChangePasswordResponse(updatedUSer,"Password changed successfully");
     }
 
+    private void validateForgotPasswordRequest(ForgotPasswordRequest request) throws SecException {
+        if (request.getEmail().isBlank() || request.getEmail().isEmpty()){
+            throw new SecException("Enter registration email address");
+        }
+    }
+
+    @Override
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) throws SecException, UnirestException {
+        validateForgotPasswordRequest(request);
+        Optional<User> foundUser = userRepository.findByEmail(request.getEmail());
+        if (foundUser.isEmpty()){
+            throw new SecException("Invalid email address");
+        }
+        String messageBody = "Hey" +foundUser.get().getFirstName() +" "+foundUser.get().getLastName()+
+                "\nPlease click on the link below to set a new password\n" +
+                "http://localhost:8080/api/v1/users/resetPassword/"+request.getEmail();
+
+        MailGun.sendMail("","",request.getEmail(),messageBody);
+
+        return new ForgotPasswordResponse("Verification link sent to "+request.getEmail());
+    }
+
+    @Override
+    public ResetPasswordResponse resetPassword(String email,ResetPasswordRequest request) throws SecException {
+        validateResetPasswordRequest(request);
+        Optional<User> foundUser = userRepository.findByEmail(email);
+        foundUser.ifPresent(user -> user.setPassword(passwordEncoder.encode(request.getNewPassword())));
+        return new ResetPasswordResponse("Password reset successfully");
+    }
+    private void validateResetPasswordRequest(ResetPasswordRequest request) throws SecException {
+        if (request.getNewPassword().isBlank() || request.getNewPassword().isEmpty()){
+            throw new SecException("Password cannot be null");
+        }
+    }
     private void validateResetPasswordRequest(ChangePasswordRequest request) throws SecException {
         if (request.getEmail().isEmpty() || request.getEmail().isBlank()){
             throw new SecException("Email cannot be empty");
@@ -163,10 +192,5 @@ public class UserServiceImpl implements UserService{
         if (request.getPhoneNumber().isBlank() || request.getPhoneNumber().isEmpty()){
             throw new SecException("Please enter phone number");
         }
-
-//        if (request.getPassword().isBlank() || request.getPassword().isEmpty()){
-//            throw new SecException("Please enter password");
-//        }
-
     }
 }
